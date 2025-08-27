@@ -1,4 +1,4 @@
-const Chat = require("../models/Chat/chat");
+// const Chat = require("../models/Chat/chat");
 const Team = require("../models/League/team");
 const Billing = require("../models/User/billing");
 const Notification = require("../models/User/notification");
@@ -63,10 +63,10 @@ async function handlePayment(status, payload, other) {
           }
         );
         // create chat here
-        await Chat.create({
-          team: teamId,
-          league: leagueId,
-        });
+        // await Chat.create({
+        //   team: teamId,
+        //   league: leagueId,
+        // });
         //    send to admin
         // await sendNotification(
         //   admin,

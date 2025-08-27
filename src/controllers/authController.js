@@ -1,43 +1,47 @@
-const User = require("../models/User/user");
-const sendMail = require("../utils/sendMail");
+const User = require("../models/User");
 const SuccessHandler = require("../utils/SuccessHandler");
 const ErrorHandler = require("../utils/ErrorHandler");
+const sendMail = require("../utils/sendMail");
 const ejs = require("ejs");
 const path = require("path");
 const { uploadFiles, deleteFile } = require("../utils/aws");
 const cloud = require("../functions/cloudinary");
-
+const sendGoogleOtpMail = require("../utils/SendGoogleMail");
 //register
 const register = async (req, res) => {
   // #swagger.tags = ['auth']
   try {
-    const { name, email, password, phone, deviceToken } = req.body;
-    const user = await User.findOne({ $or: [{ email, phone }] });
+    const { name, email, password,  } = req.body;
+    const user = await User.findOne({email:email});
     if (user) {
-      const msg =
-        user.email === email
-          ? "User already exists"
-          : "Phone number already exists";
+      const msg = "User already exists"
+         
       return ErrorHandler(msg, 400, req, res);
     }
 
     const newUser = await User.create({
       name,
       email,
-      phone,
       password,
-      deviceToken: deviceToken || null,
-      provider: "app",
     });
-    newUser.save();
 
-    const jwtToken = newUser.getJWTToken();
+     const emailVerificationToken = Math.floor(100000 + Math.random() * 900000);
+    const emailVerificationTokenExpires = new Date(Date.now() + 5 * 60 * 1000);
+    newUser.emailVerificationToken = emailVerificationToken;
+    newUser.emailVerificationTokenExpires = emailVerificationTokenExpires;
+    
+    const emailTemplate = await ejs.renderFile(
+      path.join(__dirname, "../ejs/loginCode.ejs"),
+      { emailVerificationToken }
+    );
+    
+    await sendMail(email, "Your HealthCare Login Code", emailTemplate);
+    newUser.save();
+     sendGoogleOtpMail(email, emailVerificationToken, "login");
+    // const jwtToken = newUser.getJWTToken();
     return SuccessHandler(
       {
-        token: jwtToken,
-        user: newUser,
-        signup: true,
-      },
+        user: newUser},
       200,
       res
     );
@@ -51,7 +55,7 @@ const login = async (req, res) => {
   // #swagger.tags = ['auth']
 
   try {
-    const { email, password, deviceToken } = req.body;
+    const { email, password } = req.body;
     const user = await User.findOne({ email }).select("+password");
     if (!user) {
       return ErrorHandler("User does not exist", 400, req, res);
@@ -60,10 +64,7 @@ const login = async (req, res) => {
     if (!isMatch) {
       return ErrorHandler("Invalid credentials", 400, req, res);
     }
-    if (deviceToken) {
-      user.deviceToken = deviceToken;
-      await user.save();
-    }
+   
     jwtToken = user.getJWTToken();
     return SuccessHandler(
       {
@@ -78,6 +79,32 @@ const login = async (req, res) => {
   }
 };
 
+//verify email
+const verifyEmail = async (req, res) => {
+  // #swagger.tags = ['auth']
+  try {
+    const { email, otp } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
+      return ErrorHandler("User does not exist", 400, res);
+    }
+
+    if (
+      user.emailVerificationToken.toString() !== otp.toString() ||
+      user.emailVerificationTokenExpires < Date.now()
+    ) {
+      return ErrorHandler("Invalid token", 400, res);
+    }
+    user.isEmailVerified = true;
+    user.emailVerificationToken = null;
+    user.emailVerificationTokenExpires = null;
+    await user.save();
+    return SuccessHandler(`Email verified successfully`, 200, res);
+  } catch (error) {
+    return ErrorHandler(error.message, 500, res);
+  }
+};
+
 //forgot password
 const forgotPassword = async (req, res) => {
   // #swagger.tags = ['auth']
@@ -89,17 +116,18 @@ const forgotPassword = async (req, res) => {
       return ErrorHandler("User does not exist", 400, req, res);
     }
     const passwordResetToken = Math.floor(100000 + Math.random() * 900000);
-    const passwordResetTokenExpires = new Date(Date.now() + 10 * 60 * 1000);
+    const passwordResetTokenExpires = new Date(Date.now() + 5 * 60 * 1000);
     user.passwordResetToken = passwordResetToken;
     user.passwordResetTokenExpires = passwordResetTokenExpires;
     console.log(passwordResetToken);
     await user.save();
-    const ejTemp = await ejs.renderFile(
-      `${path.join(__dirname, "../ejs")}/forgetPassword.ejs`,
-      { otp: passwordResetToken }
-    );
-    const subject = `Password reset token`;
-    await sendMail(email, subject, ejTemp);
+    // const ejTemp = await ejs.renderFile(
+    //   `${path.join(__dirname, "../ejs")}/forgetPassword.ejs`,
+    //   { otp: passwordResetToken }
+    // );
+    // const subject = `Password reset token`;
+    // await sendMail(email, subject, ejTemp);
+    sendGoogleOtpMail(email, passwordResetToken , "forgot password");
     return SuccessHandler(`Password reset token sent to ${email}`, 200, res);
   } catch (error) {
     return ErrorHandler(error.message, 500, req, res);
@@ -356,4 +384,5 @@ module.exports = {
   updateProfile,
   updateAdminProfile,
   socialAuth,
+  verifyEmail,
 };

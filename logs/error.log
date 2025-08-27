@@ -354,3 +354,13 @@
 {"date":"2024-12-05T07:04:38.335Z","level":"error","message":"country is not defined","method":"GET","service":"user-service","url":"/?season=&league=&city=&page=1&limit=7"}
 {"date":"2024-12-05T07:04:40.356Z","level":"error","message":"country is not defined","method":"GET","service":"user-service","url":"/?season=&league=&city=&page=1&limit=7"}
 {"date":"2024-12-05T07:22:19.273Z","level":"error","message":"League is required","method":"POST","service":"user-service","url":"/player-standing"}
+{"date":"2025-08-27T10:29:38.765Z","level":"error","message":"sendOtpMail is not defined","method":"POST","service":"user-service","url":"/register"}
+{"date":"2025-08-27T10:41:24.638Z","level":"error","message":"User already exists","method":"POST","service":"user-service","url":"/register"}
+{"date":"2025-08-27T11:20:03.497Z","level":"error","message":"code is not defined","method":"POST","service":"user-service","url":"/register"}
+{"date":"2025-08-27T11:20:54.187Z","level":"error","message":"F:\\novasphere\\Deniel-Assistance-BE\\src\\ejs\\loginCode.ejs:78\n    76|         <div class=\"code-container\">\r\n    77|             <div>Your verification code is:</div>\r\n >> 78|             <div class=\"code\"><%= code %></div>\r\n    79|             <div style=\"font-size: 14px; color: #666; margin-top: 10px;\">\r\n    80|                 This code will expire in 5 minutes\r\n    81|             </div>\r\n\ncode is not defined","method":"POST","service":"user-service","url":"/register"}
+{"date":"2025-08-27T11:43:30.204Z","level":"error","message":"user.comparePassword is not a function","method":"POST","service":"user-service","url":"/login"}
+{"date":"2025-08-27T11:44:59.920Z","level":"error","message":"bcrypt is not defined","method":"POST","service":"user-service","url":"/register"}
+{"date":"2025-08-27T11:46:21.866Z","level":"error","message":"User already exists","method":"POST","service":"user-service","url":"/register"}
+{"date":"2025-08-27T11:46:47.333Z","level":"error","message":"secretOrPrivateKey must have a value","method":"POST","service":"user-service","url":"/login"}
+{"date":"2025-08-27T11:48:14.574Z","level":"error","message":"secretOrPrivateKey must have a value","method":"POST","service":"user-service","url":"/login"}
+{"date":"2025-08-27T12:36:19.677Z","level":"error","message":"Invalid credentials","method":"POST","service":"user-service","url":"/login"}

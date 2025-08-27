@@ -6975,3 +6975,45 @@
 {"date":"2024-12-05T07:34:26.736Z","level":"info","message":"Request received","method":"GET","service":"user-service","url":"/team?season=&league=&city=ab&page=1&limit=7"}
 {"date":"2024-12-05T07:34:27.080Z","level":"info","message":"Request received","method":"GET","service":"user-service","url":"/team?season=&league=&city=a&page=1&limit=7"}
 {"date":"2024-12-05T07:34:27.209Z","level":"info","message":"Request received","method":"GET","service":"user-service","url":"/team?season=&league=&city=&page=1&limit=7"}
+{"date":"2025-08-27T10:29:38.266Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/auth/register"}
+{"date":"2025-08-27T10:29:38.765Z","level":"error","message":"sendOtpMail is not defined","method":"POST","service":"user-service","url":"/register"}
+{"date":"2025-08-27T10:41:24.539Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/auth/register"}
+{"date":"2025-08-27T10:41:24.638Z","level":"error","message":"User already exists","method":"POST","service":"user-service","url":"/register"}
+{"date":"2025-08-27T10:49:09.244Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/auth/register"}
+{"date":"2025-08-27T11:20:03.141Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/auth/register"}
+{"date":"2025-08-27T11:20:03.497Z","level":"error","message":"code is not defined","method":"POST","service":"user-service","url":"/register"}
+{"date":"2025-08-27T11:20:54.009Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/auth/register"}
+{"date":"2025-08-27T11:20:54.187Z","level":"error","message":"F:\\novasphere\\Deniel-Assistance-BE\\src\\ejs\\loginCode.ejs:78\n    76|         <div class=\"code-container\">\r\n    77|             <div>Your verification code is:</div>\r\n >> 78|             <div class=\"code\"><%= code %></div>\r\n    79|             <div style=\"font-size: 14px; color: #666; margin-top: 10px;\">\r\n    80|                 This code will expire in 5 minutes\r\n    81|             </div>\r\n\ncode is not defined","method":"POST","service":"user-service","url":"/register"}
+{"date":"2025-08-27T11:21:46.292Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/auth/register"}
+{"date":"2025-08-27T11:24:18.416Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/auth/register"}
+{"date":"2025-08-27T11:36:04.263Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/auth/register"}
+{"date":"2025-08-27T11:37:51.626Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/auth/register"}
+{"date":"2025-08-27T11:40:54.729Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/auth/verifyEmail"}
+{"date":"2025-08-27T11:43:30.147Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/auth/login"}
+{"date":"2025-08-27T11:43:30.204Z","level":"error","message":"user.comparePassword is not a function","method":"POST","service":"user-service","url":"/login"}
+{"date":"2025-08-27T11:44:59.784Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/auth/register"}
+{"date":"2025-08-27T11:44:59.920Z","level":"error","message":"bcrypt is not defined","method":"POST","service":"user-service","url":"/register"}
+{"date":"2025-08-27T11:45:56.444Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/auth/register"}
+{"date":"2025-08-27T11:46:21.807Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/auth/register"}
+{"date":"2025-08-27T11:46:21.866Z","level":"error","message":"User already exists","method":"POST","service":"user-service","url":"/register"}
+{"date":"2025-08-27T11:46:30.823Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/auth/verifyEmail"}
+{"date":"2025-08-27T11:46:47.158Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/auth/login"}
+{"date":"2025-08-27T11:46:47.333Z","level":"error","message":"secretOrPrivateKey must have a value","method":"POST","service":"user-service","url":"/login"}
+{"date":"2025-08-27T11:48:14.391Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/auth/login"}
+{"date":"2025-08-27T11:48:14.574Z","level":"error","message":"secretOrPrivateKey must have a value","method":"POST","service":"user-service","url":"/login"}
+{"date":"2025-08-27T11:48:38.685Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/auth/login"}
+{"date":"2025-08-27T12:32:12.640Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/auth/forgotPassword"}
+{"date":"2025-08-27T12:34:00.992Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/auth/forgotPassword"}
+{"date":"2025-08-27T12:35:25.300Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/auth/resetPassword"}
+{"date":"2025-08-27T12:35:41.997Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/auth/resetPassword"}
+{"date":"2025-08-27T12:36:06.669Z","level":"info","message":"Request received","method":"PUT","service":"user-service","url":"/auth/resetPassword"}
+{"date":"2025-08-27T12:36:19.496Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/auth/login"}
+{"date":"2025-08-27T12:36:19.677Z","level":"error","message":"Invalid credentials","method":"POST","service":"user-service","url":"/login"}
+{"date":"2025-08-27T12:36:25.907Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/auth/login"}
+{"date":"2025-08-27T13:58:41.669Z","level":"info","message":"Request received","method":"GET","service":"user-service","url":"/api-docs"}
+{"date":"2025-08-27T13:58:41.705Z","level":"info","message":"Request received","method":"GET","service":"user-service","url":"/api-docs/"}
+{"date":"2025-08-27T13:58:41.822Z","level":"info","message":"Request received","method":"GET","service":"user-service","url":"/api-docs/swagger-ui.css"}
+{"date":"2025-08-27T13:58:41.840Z","level":"info","message":"Request received","method":"GET","service":"user-service","url":"/api-docs/swagger-ui-bundle.js"}
+{"date":"2025-08-27T13:58:41.846Z","level":"info","message":"Request received","method":"GET","service":"user-service","url":"/api-docs/swagger-ui-standalone-preset.js"}
+{"date":"2025-08-27T13:58:41.855Z","level":"info","message":"Request received","method":"GET","service":"user-service","url":"/api-docs/swagger-ui-init.js"}
+{"date":"2025-08-27T13:58:42.500Z","level":"info","message":"Request received","method":"GET","service":"user-service","url":"/api-docs/favicon-32x32.png"}
