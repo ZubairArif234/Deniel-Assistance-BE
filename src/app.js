@@ -26,9 +26,47 @@ console.log(moment().endOf("day").toDate())
 
 console.log(global.onlineUsers);
 
-// Middlewares
-app.use(cors());
+// Middlewares - CORS must be first
+// CORS configuration for both development and production
+const allowedOrigins = [
+  "http://localhost:5173", 
+  "http://localhost:3000", 
+  "http://localhost:8080", 
+  "http://127.0.0.1:5173",
+  "http://127.0.0.1:8080",
+  "http://127.0.0.1:3000",
+  // Production frontend URLs - you'll add these when you deploy frontend
+  process.env.FRONTEND_URL, // Will be set when you deploy frontend
+  process.env.FRONTEND_URL_2, // Additional domains if needed
+  // Common frontend deployment domains (remove after you get your actual domain)
+  "https://mental-denial-analyzer.vercel.app",
+  "https://green-appeal-flow.vercel.app",
+  "https://mental-denial-analyzer.netlify.app",
+  "https://green-appeal-flow.netlify.app",
+].filter(Boolean); // Remove undefined values
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV === 'development') {
+      callback(null, true);
+    } else {
+      console.log('CORS blocked origin:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+  preflightContinue: false,
+  optionsSuccessStatus: 204
+}));
+
+// Handle preflight requests
 app.options("*", cors());
+
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 app.use(loggerMiddleware);
 
@@ -93,7 +131,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
 
 // router index
-app.use("/", router);
+app.use("/api", router);
 // api doc
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
