@@ -28,35 +28,35 @@ console.log(global.onlineUsers);
 
 // Middlewares - CORS must be first
 // CORS configuration for both development and production
-const allowedOrigins = [
-  "http://localhost:5173", 
-  "http://localhost:3000", 
-  "http://localhost:8080", 
-  // Production frontend URLs - you'll add these when you deploy frontend
-  process.env.FRONTEND_URL, // Will be set when you deploy frontend
-  process.env.FRONTEND_URL_2, // Additional domains if needed
-  // Common frontend deployment domains (remove after you get your actual domain)
-  "https://green-appeal-flow-2pk8.vercel.app",
-].filter(Boolean); // Remove undefined values
+// const allowedOrigins = [
+//   "http://localhost:5173", 
+//   "http://localhost:3000", 
+//   "http://localhost:8080", 
+//   // Production frontend URLs - you'll add these when you deploy frontend
+//   process.env.FRONTEND_URL, // Will be set when you deploy frontend
+//   process.env.FRONTEND_URL_2, // Additional domains if needed
+//   // Common frontend deployment domains (remove after you get your actual domain)
+//   "https://green-appeal-flow-2pk8.vercel.app",
+// ].filter(Boolean); // Remove undefined values
 
-app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
+// app.use(cors({
+//   origin: function (origin, callback) {
+//     // Allow requests with no origin (like mobile apps or curl requests)
+//     if (!origin) return callback(null, true);
     
-    if ( allowedOrigins.some(o => origin?.startsWith(o)) || process.env.NODE_ENV === 'development') {
-      callback(null, true);
-    } else {
-      console.log('CORS blocked origin:', origin);
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
-  preflightContinue: false,
-  optionsSuccessStatus: 204
-}));
+//     if ( allowedOrigins.some(o => origin?.startsWith(o)) || process.env.NODE_ENV === 'development') {
+//       callback(null, true);
+//     } else {
+//       console.log('CORS blocked origin:', origin);
+//       callback(new Error('Not allowed by CORS'));
+//     }
+//   },
+//   credentials: true,
+//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+//   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+//   preflightContinue: false,
+//   optionsSuccessStatus: 204
+// }));
 
 // Handle preflight requests
 app.options("*", cors());
