@@ -32,17 +32,11 @@ const allowedOrigins = [
   "http://localhost:5173", 
   "http://localhost:3000", 
   "http://localhost:8080", 
-  "http://127.0.0.1:5173",
-  "http://127.0.0.1:8080",
-  "http://127.0.0.1:3000",
   // Production frontend URLs - you'll add these when you deploy frontend
   process.env.FRONTEND_URL, // Will be set when you deploy frontend
   process.env.FRONTEND_URL_2, // Additional domains if needed
   // Common frontend deployment domains (remove after you get your actual domain)
-  "https://mental-denial-analyzer.vercel.app",
-  "https://green-appeal-flow.vercel.app",
-  "https://mental-denial-analyzer.netlify.app",
-  "https://green-appeal-flow.netlify.app",
+  "https://green-appeal-flow-2pk8.vercel.app",
 ].filter(Boolean); // Remove undefined values
 
 app.use(cors({
