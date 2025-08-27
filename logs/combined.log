@@ -7017,3 +7017,15 @@
 {"date":"2025-08-27T13:58:41.846Z","level":"info","message":"Request received","method":"GET","service":"user-service","url":"/api-docs/swagger-ui-standalone-preset.js"}
 {"date":"2025-08-27T13:58:41.855Z","level":"info","message":"Request received","method":"GET","service":"user-service","url":"/api-docs/swagger-ui-init.js"}
 {"date":"2025-08-27T13:58:42.500Z","level":"info","message":"Request received","method":"GET","service":"user-service","url":"/api-docs/favicon-32x32.png"}
+{"date":"2025-08-27T15:06:28.384Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/case"}
+{"date":"2025-08-27T15:06:40.127Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/auth/login"}
+{"date":"2025-08-27T15:06:56.979Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/case"}
+{"date":"2025-08-27T15:06:57.122Z","level":"error","message":"path is not defined","method":"POST","service":"user-service","url":"/"}
+{"date":"2025-08-27T15:16:18.881Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/case"}
+{"date":"2025-08-27T15:17:59.348Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/case"}
+{"date":"2025-08-27T15:19:03.998Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/case"}
+{"date":"2025-08-27T15:24:11.749Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/case"}
+{"date":"2025-08-27T15:26:20.469Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/api/auth/register"}
+{"date":"2025-08-27T15:27:20.826Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/case"}
+{"date":"2025-08-27T15:28:33.366Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/case"}
+{"date":"2025-08-27T15:31:31.211Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/api/auth/register"}

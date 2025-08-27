@@ -175,6 +175,59 @@
           }
         }
       }
+    },
+    "/case/": {
+      "post": {
+        "tags": [
+          "case"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "currentClaim": {
+                  "example": "any"
+                },
+                "prevClaimDOS": {
+                  "example": "any"
+                },
+                "prevClaimCPT": {
+                  "example": "any"
+                },
+                "denialText": {
+                  "example": "any"
+                },
+                "encounterText": {
+                  "example": "any"
+                },
+                "primaryPayer": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
     }
   }
 }
