@@ -59,66 +59,12 @@ console.log(global.onlineUsers);
 // }));
 
 // Handle preflight requests
+app.use(cors());
 app.options("*", cors());
 
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 app.use(loggerMiddleware);
 
-// webhooks
-const endpointSecret = process.env.WEBHOOK_SECRET;
-
-// app.post(
-//   "/webhook",
-//   bodyParser.raw({ type: "*/*" }),
-//   async (request, response) => {
-//     const sig = request.headers["stripe-signature"];
-
-//     let event;
-
-//     try {
-//       event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
-//     } catch (err) {
-//       response.status(400).send(`Webhook Error: ${err.message}`);
-//       return;
-//     }
-
-//     // Handle the event
-//     switch (event.type) {
-//       case "payment_intent.succeeded":
-//         const paymentIntentSucceeded = event.data.object;
-//         console.log("paymentItnennnnnn", paymentIntentSucceeded);
-
-//         await handlePayment(
-//           "success",
-//           paymentIntentSucceeded.metadata,
-//           paymentIntentSucceeded
-//         );
-//         break;
-//       case "payment_intent.canceled":
-//         const paymentIntentCanceled = event.data.object;
-//         await handlePayment(
-//           "canceled",
-//           paymentIntentCanceled.metadata,
-//           paymentIntentCanceled
-//         );
-//         break;
-//       case "payment_intent.payment_failed":
-//         const paymentIntentFailed = event.data.object;
-//         await handlePayment(
-//           "failed",
-//           paymentIntentFailed.metadata,
-//           paymentIntentFailed
-//         );
-//         break;
-//       // ... handle other event types
-//       default:
-//         console.log(`Unhandled event type ${event.type}`);
-//     }
-
-//     // Return a 200 response to acknowledge receipt of the event
-//     response.send({ received: true });
-//   }
-// );
 
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.urlencoded({ extended: false }));
