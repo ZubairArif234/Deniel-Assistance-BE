@@ -26,9 +26,20 @@ console.log(moment().endOf("day").toDate())
 
 console.log(global.onlineUsers);
 
-// Middlewares
-app.use(cors());
+// Middlewares - CORS must be first
+// Development CORS configuration - more permissive for local development
+app.use(cors({
+  origin: true, // Allow all origins in development
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+  preflightContinue: false,
+  optionsSuccessStatus: 204
+}));
+
+// Handle preflight requests
 app.options("*", cors());
+
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 app.use(loggerMiddleware);
 
@@ -93,7 +104,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
 
 // router index
-app.use("/", router);
+app.use("/api", router);
 // api doc
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 

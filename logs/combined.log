@@ -7017,3 +7017,20 @@
 {"date":"2025-08-27T13:58:41.846Z","level":"info","message":"Request received","method":"GET","service":"user-service","url":"/api-docs/swagger-ui-standalone-preset.js"}
 {"date":"2025-08-27T13:58:41.855Z","level":"info","message":"Request received","method":"GET","service":"user-service","url":"/api-docs/swagger-ui-init.js"}
 {"date":"2025-08-27T13:58:42.500Z","level":"info","message":"Request received","method":"GET","service":"user-service","url":"/api-docs/favicon-32x32.png"}
+{"date":"2025-08-27T14:38:55.428Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/api/auth/login"}
+{"date":"2025-08-27T14:38:59.942Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/api/auth/login"}
+{"date":"2025-08-27T14:39:15.232Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/api/auth/register"}
+{"date":"2025-08-27T14:47:00.782Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/api/auth/login"}
+{"date":"2025-08-27T14:47:01.063Z","level":"error","message":"User does not exist","method":"POST","service":"user-service","url":"/login"}
+{"date":"2025-08-27T14:47:24.185Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/api/auth/register"}
+{"date":"2025-08-27T14:47:47.725Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/api/auth/verifyEmail"}
+{"date":"2025-08-27T14:47:52.841Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/api/auth/login"}
+{"date":"2025-08-27T15:08:26.547Z","level":"info","message":"Request received","method":"GET","service":"user-service","url":"/api/auth/me"}
+{"date":"2025-08-27T15:11:44.570Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/api/auth/login"}
+{"date":"2025-08-27T15:14:09.533Z","level":"info","message":"Request received","method":"GET","service":"user-service","url":"/api/auth/me"}
+{"date":"2025-08-27T15:14:16.209Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/api/auth/login"}
+{"date":"2025-08-27T15:14:23.441Z","level":"info","message":"Request received","method":"GET","service":"user-service","url":"/api/auth/me"}
+{"date":"2025-08-27T15:14:39.321Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/api/auth/login"}
+{"date":"2025-08-27T15:16:45.971Z","level":"info","message":"Request received","method":"GET","service":"user-service","url":"/api/auth/me"}
+{"date":"2025-08-27T15:19:48.955Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/api/auth/login"}
+{"date":"2025-08-27T15:20:08.009Z","level":"info","message":"Request received","method":"GET","service":"user-service","url":"/api/auth/me"}
