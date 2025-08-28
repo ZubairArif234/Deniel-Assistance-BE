@@ -3,6 +3,7 @@ const auth = require("./auth");
 const caseRoute = require("./case")
 const userRoute = require("./user")
 const aiAnalysisRoute = require("./aiAnalysis")
+const aiRoute = require("./ai")
 
 router.use("/auth", auth);
 router.use("/user", userRoute);
