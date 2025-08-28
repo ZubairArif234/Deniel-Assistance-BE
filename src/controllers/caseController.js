@@ -3,10 +3,21 @@ const SuccessHandler = require("../utils/SuccessHandler");
 const ErrorHandler = require("../utils/ErrorHandler");
 const cloud = require("../functions/cloudinary");
 const path = require("path");
+const OpenAI  = require("openai");
+const { default: mongoose } = require("mongoose");
+const dotenv = require("dotenv");
+const AiAnalysis = require("../models/AiAnalysisi");
+dotenv.config({ path: "./src/config/config.env" });
+
+const client = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY, 
+});
+
 //create case
 const createCase = async (req, res) => {
   // #swagger.tags = ['case']
   try {
+    const {id} = req.user
     const {denialScreenShots,encounterScreenShots} =  req.files
     const {
       currentClaim,
@@ -41,6 +52,7 @@ if (encounterScreenShots?.length > 0) {
 }
 
     const newCase = await Case.create({
+      user:id,
       currentClaim,
       prevClaimDOS,
       prevClaimCPT,
@@ -51,9 +63,34 @@ if (encounterScreenShots?.length > 0) {
       primaryPayer,
     });
 
+    const response = await client.chat.completions.create({
+      model: "gpt-4o-mini", 
+      response_format: { type: "json_object" }, 
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are an assistant that analyzes case entries. Always respond in JSON with 'flows' and 'improvements'.",
+        },
+        {
+          role: "user",
+          content: `Here is a case entry: ${JSON.stringify(newCase)}`,
+        },
+      ],
+    });
+    
+    const analysis = JSON.parse(response.choices[0].message.content);
+
+    const newAiAnalysis = await AiAnalysis.create({
+      case:newCase?._id,
+      user:id,
+      analysis
+    })
+
     return SuccessHandler(
       {
         user: newCase,
+        newAiAnalysis
       },
       200,
       res
@@ -63,39 +100,49 @@ if (encounterScreenShots?.length > 0) {
   }
 };
 
-//create case
-const updateCase = async (req, res) => {
+
+// get mine
+const getMineCases = async (req, res) => {
   // #swagger.tags = ['case']
   try {
-    const { id } = req.params;
-    const {
-      currentClaim,
-      prevClaimDOS,
-      prevClaimCPT,
-      denialScreenShots,
-      encounterScreenShots,
-      denialText,
-      encounterText,
-      primaryPayer,
-    } = req.body;
-    const isCaseExist = Case.findById(id);
+    const { id } = req.user;
+    const { page = 1, limit = 10 } = req.query;
+console.log(id);
 
-    if (!isCaseExist) {
-      return ErrorHandler("Case not found", 404, req, res);
-    }
+    const cases = await Case.aggregate([
+      {
+        $match: { user: new mongoose.Types.ObjectId(id) }
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "user",
+          foreignField: "_id",
+          as: "user"
+        }
+      },
+      { $unwind: "$user" }, // 👈 makes "user" a single object instead of array
+      {
+        $facet: {
+          totalCount: [{ $count: "count" }],
+          data: [
+            { $sort: { createdAt: -1 } }, // 👈 latest cases first
+            { $skip: (Number(page) - 1) * Number(limit) },
+            { $limit: Number(limit) }
+          ]
+        }
+      }
+    ]);
 
-    isCaseExist.currentClaim = currentClaim || isCaseExist.currentClaim
-    isCaseExist.prevClaimDOS = prevClaimDOS || isCaseExist.prevClaimDOS
-    isCaseExist.prevClaimCPT = prevClaimCPT || isCaseExist.prevClaimCPT
-    isCaseExist.denialScreenShots = denialScreenShots || isCaseExist.denialScreenShots
-    isCaseExist.encounterScreenShots = encounterScreenShots || isCaseExist.encounterScreenShots
-    isCaseExist.denialText = denialText || isCaseExist.denialText
-    isCaseExist.encounterText = encounterText || isCaseExist.encounterText
-    isCaseExist.primaryPayer = primaryPayer || isCaseExist.primaryPayer
+    const totalCount = cases[0]?.totalCount?.[0]?.count || 0;
+    const data = cases[0]?.data || [];
 
     return SuccessHandler(
       {
-        user: newCase,
+        totalCount,
+        data,
+        page: Number(page),
+        limit: Number(limit)
       },
       200,
       res
@@ -104,8 +151,49 @@ const updateCase = async (req, res) => {
     return ErrorHandler(error.message, 500, req, res);
   }
 };
+
+
+// get all
+const getAllCases = async (req, res) => {
+  // #swagger.tags = ['case']
+  try {
+    const { page = 1, limit = 10 } = req.query;
+
+    const cases = await Case.aggregate([
+      {
+        $facet: {
+          totalCount: [{ $count: "count" }],
+          data: [
+            { $sort: { createdAt: -1 } }, // 👈 optional: latest first
+            { $skip: (Number(page) - 1) * Number(limit) },
+            { $limit: Number(limit) }
+          ]
+        }
+      }
+    ]);
+
+    const totalCount = cases[0]?.totalCount?.[0]?.count || 0;
+    const data = cases[0]?.data || [];
+
+    return SuccessHandler(
+      {
+        totalCount,
+        data,
+        page: Number(page),
+        limit: Number(limit),
+      },
+      200,
+      res
+    );
+  } catch (error) {
+    return ErrorHandler(error.message, 500, req, res);
+  }
+};
+
+
 
 module.exports = {
   createCase,
-  updateCase
+  getMineCases,
+  getAllCases
 };
