@@ -1,9 +1,13 @@
 const express = require("express");
 const router = express.Router();
 const caseController = require("../controllers/caseController");
-const { isAuthenticated } = require("../middleware/auth");
+const { isAuthenticated, isAdmin } = require("../middleware/auth");
 const uploader = require("../utils/uploader");
 
+router.route("/getMine").get( isAuthenticated,
+  caseController.getMineCases);
+router.route("/getAll").get( isAuthenticated,isAdmin,
+  caseController.getAllCases);
 router.route("/").post( isAuthenticated,
 
   uploader.fields([
@@ -11,6 +15,5 @@ router.route("/").post( isAuthenticated,
     { name: "encounterScreenShots", maxCount: 5 },
   ]),
   caseController.createCase);
-
   
 module.exports = router;

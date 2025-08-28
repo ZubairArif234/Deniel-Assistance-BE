@@ -1,0 +1,31 @@
+{"date":"2025-08-28T08:54:23.122Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/auth/register"}
+{"date":"2025-08-28T08:54:25.533Z","level":"error","message":"User validation failed: name: Path `name` is required.","method":"POST","service":"user-service","url":"/register"}
+{"date":"2025-08-28T08:54:37.794Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/auth/register"}
+{"date":"2025-08-28T08:57:14.182Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/auth/login"}
+{"date":"2025-08-28T08:57:34.992Z","level":"info","message":"Request received","method":"GET","service":"user-service","url":"/user"}
+{"date":"2025-08-28T08:59:52.232Z","level":"info","message":"Request received","method":"GET","service":"user-service","url":"/user"}
+{"date":"2025-08-28T09:04:20.814Z","level":"info","message":"Request received","method":"GET","service":"user-service","url":"/user"}
+{"date":"2025-08-28T09:07:27.578Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/case"}
+{"date":"2025-08-28T09:07:54.784Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/case"}
+{"date":"2025-08-28T10:45:26.055Z","level":"info","message":"Request received","method":"GET","service":"user-service","url":"/case/getMine"}
+{"date":"2025-08-28T10:46:41.571Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/auth/login"}
+{"date":"2025-08-28T10:47:05.874Z","level":"info","message":"Request received","method":"GET","service":"user-service","url":"/case/getMine"}
+{"date":"2025-08-28T10:49:02.275Z","level":"info","message":"Request received","method":"GET","service":"user-service","url":"/case/getMine"}
+{"date":"2025-08-28T10:49:26.406Z","level":"info","message":"Request received","method":"GET","service":"user-service","url":"/case/getMine"}
+{"date":"2025-08-28T10:50:01.208Z","level":"info","message":"Request received","method":"GET","service":"user-service","url":"/case/getMine"}
+{"date":"2025-08-28T10:52:30.700Z","level":"info","message":"Request received","method":"GET","service":"user-service","url":"/case/getMine"}
+{"date":"2025-08-28T10:55:05.979Z","level":"info","message":"Request received","method":"GET","service":"user-service","url":"/case/getAll"}
+{"date":"2025-08-28T10:55:28.425Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/auth/login"}
+{"date":"2025-08-28T10:55:29.816Z","level":"error","message":"Invalid credentials","method":"POST","service":"user-service","url":"/login"}
+{"date":"2025-08-28T10:55:36.821Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/auth/login"}
+{"date":"2025-08-28T10:55:56.457Z","level":"info","message":"Request received","method":"GET","service":"user-service","url":"/case/getAll"}
+{"date":"2025-08-28T10:57:42.034Z","level":"info","message":"Request received","method":"GET","service":"user-service","url":"/case/getMine"}
+{"date":"2025-08-28T10:58:02.007Z","level":"info","message":"Request received","method":"GET","service":"user-service","url":"/case/getMine"}
+{"date":"2025-08-28T10:58:09.514Z","level":"info","message":"Request received","method":"GET","service":"user-service","url":"/case/getMine"}
+{"date":"2025-08-28T10:58:41.855Z","level":"info","message":"Request received","method":"GET","service":"user-service","url":"/case/getMine"}
+{"date":"2025-08-28T10:59:50.300Z","level":"info","message":"Request received","method":"GET","service":"user-service","url":"/case/getMine"}
+{"date":"2025-08-28T10:59:50.454Z","level":"error","message":"mongoose is not defined","method":"GET","service":"user-service","url":"/getMine"}
+{"date":"2025-08-28T11:00:12.062Z","level":"info","message":"Request received","method":"GET","service":"user-service","url":"/case/getMine"}
+{"date":"2025-08-28T11:50:14.863Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/case"}
+{"date":"2025-08-28T12:58:11.739Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/case"}
+{"date":"2025-08-28T12:58:19.723Z","level":"error","message":"AiAnalysis validation failed: analysis: Cast to string failed for value \"{\n  flows: {\n    claim_processing: {\n      current_claim: 'abcd',\n      prev_claim_details: [Object],\n      payer: 'payer'\n    },\n    denial_analysis: {\n      denial_text: 'denial text',\n      encounter_text: 'encounter text',\n      screenshots: [Object]\n    }\n  },\n  improvements: {\n    data_management: { suggestions: [Array] },\n    claim_resolution: { suggestions: [Array] }\n  }\n}\" (type Object) at path \"analysis\"","method":"POST","service":"user-service","url":"/"}
