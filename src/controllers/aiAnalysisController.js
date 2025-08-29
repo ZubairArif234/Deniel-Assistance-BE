@@ -128,8 +128,127 @@ const getAnalysisDetails = async (req, res) => {
   }
 };
 
+// get all
+const getAllAnalysis = async (req, res) => {
+  // #swagger.tags = ['ai']
+  try {
+    const { page = 1, limit = 10 } = req.query;
+
+    const analysis = await AiAnalysis.aggregate([
+       
+            {
+              $lookup: {
+                from: "users",
+                localField: "user",
+                foreignField: "_id",
+                as: "user"
+              }
+            },
+            { $unwind: "$user" },
+            {
+              $lookup: {
+                from: "cases",
+                localField: "case",
+                foreignField: "_id",
+                as: "case"
+              }
+            },
+            { $unwind: "$case" },
+      {
+        $facet: {
+          totalCount: [{ $count: "count" }],
+          data: [
+            { $sort: { createdAt: -1 } }, // 👈 optional: latest first
+            { $skip: (Number(page) - 1) * Number(limit) },
+            { $limit: Number(limit) }
+          ]
+        }
+      }
+    ]);
+
+    const totalCount = analysis[0]?.totalCount?.[0]?.count || 0;
+    const data = analysis[0]?.data || [];
+
+    return SuccessHandler(
+      {
+        totalCount,
+        data,
+        page: Number(page),
+        limit: Number(limit),
+      },
+      200,
+      res
+    );
+  } catch (error) {
+    return ErrorHandler(error.message, 500, req, res);
+  }
+};
+
+// get mine
+const getMineAnalysis = async (req, res) => {
+  // #swagger.tags = ['ai']
+  try {
+    const {id} = req.user
+    const { page = 1, limit = 10 } = req.query;
+
+    const analysis = await AiAnalysis.aggregate([
+       {
+              $match: { user: new mongoose.Types.ObjectId(id) }
+            },
+            {
+              $lookup: {
+                from: "users",
+                localField: "user",
+                foreignField: "_id",
+                as: "user"
+              }
+            },
+            { $unwind: "$user" },
+            {
+              $lookup: {
+                from: "cases",
+                localField: "case",
+                foreignField: "_id",
+                as: "case"
+              }
+            },
+            { $unwind: "$case" },
+      {
+        $facet: {
+          totalCount: [{ $count: "count" }],
+          data: [
+            { $sort: { createdAt: -1 } }, // 👈 optional: latest first
+            { $skip: (Number(page) - 1) * Number(limit) },
+            { $limit: Number(limit) }
+          ]
+        }
+      }
+    ]);
+
+    const totalCount = analysis[0]?.totalCount?.[0]?.count || 0;
+    const data = analysis[0]?.data || [];
+
+    return SuccessHandler(
+      {
+        totalCount,
+        data,
+        page: Number(page),
+        limit: Number(limit),
+      },
+      200,
+      res
+    );
+  } catch (error) {
+    return ErrorHandler(error.message, 500, req, res);
+  }
+};
+
+
+
 module.exports = {
   likeAnalysis,
   dislikeAnalysis,
-  getAnalysisDetails
+  getAnalysisDetails,
+  getAllAnalysis,
+  getMineAnalysis
 };

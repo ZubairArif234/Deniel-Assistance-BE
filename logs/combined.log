@@ -1,0 +1,4 @@
+{"date":"2025-08-29T13:22:28.699Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/plan"}
+{"date":"2025-08-29T13:23:42.469Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/plan"}
+{"date":"2025-08-29T13:26:37.348Z","level":"info","message":"Request received","method":"PUT","service":"user-service","url":"/plan/prod_SxN1AKoJ54gzyj"}
+{"date":"2025-08-29T14:14:19.401Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/payment"}
