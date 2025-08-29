@@ -1,4 +1,5 @@
 const Case = require("../models/Case");
+const User = require("../models/User");
 const SuccessHandler = require("../utils/SuccessHandler");
 const ErrorHandler = require("../utils/ErrorHandler");
 const cloud = require("../functions/cloudinary");
@@ -86,6 +87,12 @@ if (encounterScreenShots?.length > 0) {
       user:id,
       analysis
     })
+
+    // Decrement user's cases left (important!)
+    await User.findByIdAndUpdate(id, {
+      $inc: { noOfCasesLeft: -1 },
+      isFreeTrialUser: false // Mark trial as used after first case
+    });
 
     return SuccessHandler(
       {

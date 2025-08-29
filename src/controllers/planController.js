@@ -104,19 +104,33 @@ const getSinglePlan = async (req, res) => {
 const getAllPlans = async (req, res) => {
       // #swagger.tags = ['plan']
   try {
+    console.log('Fetching all plans from Stripe...');
     
-    const products = await stripe.products.list({
-      limit: 20,
-      active: true,
-    });
-
+    // Get only active prices with their products expanded
     const prices = await stripe.prices.list({
       limit: 20,
+      active: true, // Only active prices
       expand: ["data.product"], 
     });
 
-    return SuccessHandler({ products, prices }, 200, res);
+    console.log('Found prices:', prices.data.length);
+    
+    // Filter out prices where product is not active
+    const activePricesWithActiveProducts = prices.data.filter(price => 
+      price.product && 
+      typeof price.product === 'object' && 
+      price.product.active === true
+    );
+
+    console.log('Active prices with active products:', activePricesWithActiveProducts.length);
+
+    return SuccessHandler({ 
+      prices: { 
+        data: activePricesWithActiveProducts 
+      } 
+    }, 200, res);
   } catch (error) {
+    console.error('Error fetching plans:', error);
     return ErrorHandler(error.message, 500, req, res);
   }
 };
