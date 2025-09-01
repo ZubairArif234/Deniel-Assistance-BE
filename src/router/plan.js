@@ -14,7 +14,8 @@ router
   .post(isAuthenticated,isAdmin, plan.createPlan);
 router
   .route("/:id")
-  .put(isAuthenticated,isAdmin, plan.updatePlan);
+  .put(isAuthenticated,isAdmin, plan.updatePlan)
+  .delete(isAuthenticated,isAdmin, plan.deletePlan);
 
 
   

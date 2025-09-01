@@ -136,9 +136,34 @@ const getAllPlans = async (req, res) => {
 };
 
 
+const deletePlan = async (req, res) => {
+  // #swagger.tags = ['plan']
+  try {
+    const { id } = req.params; // productId
+
+    // First, deactivate all prices for this product
+    const prices = await stripe.prices.list({ product: id });
+    for (const price of prices.data) {
+      await stripe.prices.update(price.id, { active: false });
+    }
+
+    // Then deactivate the product (Stripe doesn't allow deletion, only deactivation)
+    const updatedProduct = await stripe.products.update(id, { active: false });
+
+    return SuccessHandler(
+      { message: "Plan deactivated successfully", product: updatedProduct },
+      200,
+      res
+    );
+  } catch (error) {
+    return ErrorHandler(error.message, 500, req, res);
+  }
+};
+
 module.exports = {
   createPlan,
   updatePlan,
   getSinglePlan,
-  getAllPlans
+  getAllPlans,
+  deletePlan
 };
