@@ -218,14 +218,12 @@ const getAllCases = async (req, res) => {
 
 // get all transactions (cases with user details for admin)
 const getAllTransactions = async (req, res) => {
-  // #swagger.tags = ['case']
+  // #swagger.tags = ['transaction']
   try {
+    const Transaction = require("../models/Transaction");
     const { page = 1, limit = 10, search = '' } = req.query;
     
-    // Build match condition for searching by user email
-    let matchCondition = {};
-    
-    // Create aggregation pipeline
+    // Create aggregation pipeline for actual transactions
     let pipeline = [
       {
         $lookup: {
@@ -267,10 +265,10 @@ const getAllTransactions = async (req, res) => {
       }
     });
 
-    const cases = await Case.aggregate(pipeline);
+    const transactions = await Transaction.aggregate(pipeline);
     
-    // Handle case where no cases found
-    const result = cases[0] || { totalCount: { count: 0 }, data: [] };
+    // Handle case where no transactions found
+    const result = transactions[0] || { totalCount: { count: 0 }, data: [] };
     if (!result.totalCount) {
       result.totalCount = { count: 0 };
     }
