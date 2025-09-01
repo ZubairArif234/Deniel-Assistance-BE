@@ -167,6 +167,16 @@ const getAllCases = async (req, res) => {
     const { page = 1, limit = 10 } = req.query;
 
     const cases = await Case.aggregate([
+      // First, lookup user information
+      {
+        $lookup: {
+          from: "users",
+          localField: "user",
+          foreignField: "_id",
+          as: "user"
+        }
+      },
+      { $unwind: "$user" }, // Convert user array to object
       {
         $facet: {
           totalCount: [{ $count: "count" }],
@@ -181,6 +191,13 @@ const getAllCases = async (req, res) => {
 
     const totalCount = cases[0]?.totalCount?.[0]?.count || 0;
     const data = cases[0]?.data || [];
+    
+    console.log('getAllCases - Total cases found:', totalCount);
+    console.log('getAllCases - Sample case with user:', data[0] ? {
+      id: data[0]._id,
+      user: data[0].user,
+      currentClaim: data[0].currentClaim
+    } : 'No cases found');
 
     return SuccessHandler(
       {
@@ -199,8 +216,83 @@ const getAllCases = async (req, res) => {
 
 
 
+// get all transactions (cases with user details for admin)
+const getAllTransactions = async (req, res) => {
+  // #swagger.tags = ['case']
+  try {
+    const { page = 1, limit = 10, search = '' } = req.query;
+    
+    // Build match condition for searching by user email
+    let matchCondition = {};
+    
+    // Create aggregation pipeline
+    let pipeline = [
+      {
+        $lookup: {
+          from: "users",
+          localField: "user",
+          foreignField: "_id",
+          as: "user"
+        }
+      },
+      { $unwind: "$user" }
+    ];
+    
+    // Add search functionality for user email if search is provided
+    if (search && search.trim() !== '') {
+      pipeline.push({
+        $match: {
+          "user.email": { $regex: search.trim(), $options: 'i' }
+        }
+      });
+    }
+    
+    // Add facet for pagination
+    pipeline.push({
+      $facet: {
+        totalCount: [{ $count: "count" }],
+        data: [
+          { $sort: { createdAt: -1 } },
+          { $skip: (Number(page) - 1) * Number(limit) },
+          { $limit: Number(limit) }
+        ]
+      }
+    });
+    
+    // Add unwind for totalCount
+    pipeline.push({
+      $unwind: {
+        path: "$totalCount",
+        preserveNullAndEmptyArrays: true
+      }
+    });
+
+    const cases = await Case.aggregate(pipeline);
+    
+    // Handle case where no cases found
+    const result = cases[0] || { totalCount: { count: 0 }, data: [] };
+    if (!result.totalCount) {
+      result.totalCount = { count: 0 };
+    }
+
+    return SuccessHandler(
+      {
+        totalCount: result.totalCount.count,
+        data: result.data,
+        page: Number(page),
+        limit: Number(limit),
+      },
+      200,
+      res
+    );
+  } catch (error) {
+    return ErrorHandler(error.message, 500, req, res);
+  }
+};
+
 module.exports = {
   createCase,
   getMineCases,
-  getAllCases
+  getAllCases,
+  getAllTransactions
 };

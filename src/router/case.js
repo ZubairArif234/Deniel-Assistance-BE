@@ -8,6 +8,8 @@ router.route("/getMine").get( isAuthenticated,
   caseController.getMineCases);
 router.route("/getAll").get( isAuthenticated,isAdmin,
   caseController.getAllCases);
+router.route("/transactions").get( isAuthenticated,isAdmin,
+  caseController.getAllTransactions);
 router.route("/").post( isAuthenticated,
 
   uploader.fields([
