@@ -20,7 +20,7 @@ const dotenv = require("dotenv");
 dotenv.config({ path: "./config/config.env" });
 const stripe = require("stripe")(process.env.STRIPE_SECRET);
 const moment = require('moment')
-const handleStripeWebhook = require('./controllers/webhookController')
+const {handleStripeWebhook} = require('./controllers/webhookController')
 
 
 console.log(moment().endOf("day").toDate())
