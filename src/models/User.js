@@ -53,9 +53,13 @@ const userSchema = new Schema(
      
     },
     planId: {
-      type: Schema.Types.ObjectId,
-      ref: "Plan",
-     
+      type:String
+    },
+    subscriptionId: {
+      type:String
+    },
+    customerId: {
+      type:String
     },
     role: {
       type: String,

@@ -21,3 +21,4 @@
 {"date":"2025-08-29T18:37:05.384Z","level":"error","message":"User is not defined","method":"POST","service":"user-service","url":"/"}
 {"date":"2025-08-29T18:57:34.809Z","level":"error","message":"Price `price_1RCLhZHBs9dqOieUk5TI7TMa` is not available to be purchased because its product is not active.","method":"POST","service":"user-service","url":"/"}
 {"date":"2025-08-29T20:15:18.296Z","level":"error","message":"Operation `users.findOne()` buffering timed out after 10000ms","method":"POST","service":"user-service","url":"/login"}
+{"date":"2025-09-01T13:06:13.595Z","level":"error","message":"Invalid credentials","method":"POST","service":"user-service","url":"/login"}
