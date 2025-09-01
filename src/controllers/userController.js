@@ -3,6 +3,7 @@ const SuccessHandler = require("../utils/SuccessHandler");
 const ErrorHandler = require("../utils/ErrorHandler");
 const User = require("../models/User");
 const AiAnalysis = require("../models/AiAnalysisi");
+const Transaction = require("../models/Transaction");
 
 //get users
 const getAllUsers = async (req, res) => {
@@ -86,8 +87,9 @@ const getAdminStats = async (req, res) => {
     // Get total counts
     const totalUsers = await User.countDocuments({ role: "user" });
     const totalCases = await Case.countDocuments();
+    const totalTransactions = await Transaction.countDocuments();
     
-    console.log('Database counts - Users:', totalUsers, 'Cases:', totalCases, 'Transactions (same as cases):', totalCases);
+    console.log('Database counts - Users:', totalUsers, 'Cases:', totalCases, 'Actual Transactions:', totalTransactions);
     
     // Get total feedbacks (likes + dislikes)
     const feedbackStats = await AiAnalysis.aggregate([
@@ -117,21 +119,18 @@ const getAdminStats = async (req, res) => {
     const feedbackData = feedbackStats[0] || { totalFeedbacks: 0, totalLikes: 0, totalDislikes: 0 };
     console.log('Final feedback data:', feedbackData);
 
-    // Use total cases as transactions since each case represents a transaction
-    const totalTransactions = totalCases;
-
     // Get recent users (last 5)
     const recentUsers = await User.find({ role: "user" })
       .sort({ createdAt: -1 })
       .limit(5)
       .select('name email createdAt planType noOfCasesLeft isFreeTrialUser');
 
-    // Get recent cases as proxy for recent transactions (last 5)
-    const recentTransactions = await Case.find()
+    // Get recent actual transactions (last 5)
+    const recentTransactions = await Transaction.find()
       .populate('user', 'name email')
       .sort({ createdAt: -1 })
       .limit(5)
-      .select('currentClaim createdAt user');
+      .select('amountTotal currency paymentStatus type createdAt user stripeSessionId');
 
     const responseData = {
       stats: {
