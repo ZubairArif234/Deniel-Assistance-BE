@@ -73,7 +73,11 @@ app.use(express.json());
 
 // router index
 app.use("/", router);
-app.use("/webhook", handleStripeWebhook);
+app.post(
+  "/webhook",
+  express.raw({ type: "application/json" }),
+  handleStripeWebhook
+);
 // api doc
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
