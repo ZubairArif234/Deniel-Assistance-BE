@@ -1,6 +1,7 @@
 const SuccessHandler = require("../utils/SuccessHandler");
 const ErrorHandler = require("../utils/ErrorHandler");
 const User = require("../models/User");
+const Transaction = require("../models/Transaction");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const handleStripeWebhook = async (req, res) => {
@@ -75,7 +76,17 @@ const handleCheckoutSessionCompleted = async (session) => {
     };
 
     const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true });
-    
+     
+    await Transaction.create({
+        userId,
+        stripeSessionId: session.id,
+        amountTotal: session.amount_total,
+        currency: session.currency,
+        paymentStatus: session.payment_status,
+        subscriptionId: session.subscription,
+        type: "subscription",
+      });
+
     if (updatedUser) {
       console.log('✅ User subscription updated:', updatedUser.email);
     } else {
