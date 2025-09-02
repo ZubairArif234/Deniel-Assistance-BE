@@ -4,7 +4,7 @@ const ErrorHandler = require("../utils/ErrorHandler");
 const sendMail = require("../utils/sendMail");
 const ejs = require("ejs");
 const path = require("path");
-const { uploadFiles, deleteFile } = require("../utils/aws");
+
 const cloud = require("../functions/cloudinary");
 const sendGoogleOtpMail = require("../utils/SendGoogleMail");
 //register
