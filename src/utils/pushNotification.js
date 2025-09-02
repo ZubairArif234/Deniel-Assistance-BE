@@ -1,6 +1,6 @@
 const admin = require("firebase-admin");
 const serviceAccount = require("./fcm.json");
-const Notification = require("../models/User/notification");
+const Notification = require("../models/extra/notification");
 const { google } = require("googleapis");
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),

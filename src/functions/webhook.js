@@ -1,8 +1,8 @@
 // const Chat = require("../models/Chat/chat");
 const Team = require("../models/League/team");
-const Billing = require("../models/User/billing");
-const Notification = require("../models/User/notification");
-const User = require("../models/User/user");
+const Billing = require("../models/extra/billing");
+const Notification = require("../models/extra/notification");
+const User = require("../models/User");
 const { getUserDetail } = require("../utils");
 const adminNotification = require("../utils/adminNotification");
 const sendNotification = require("../utils/pushNotification");

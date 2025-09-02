@@ -1,5 +1,5 @@
 const { adminNotificationSocket } = require("../functions/socketFunctions");
-const Notification = require("../models/User/notification");
+const Notification = require("../models/extra/notification");
 
 const adminNotification = async (user, title, body, type, data) => {
   try {

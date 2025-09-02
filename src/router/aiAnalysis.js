@@ -3,9 +3,13 @@ const router = express.Router();
 const aiAnalysisController = require("../controllers/aiAnalysisController");
 const { isAuthenticated, isAdmin } = require("../middleware/auth");
 
+// Get all analyses (admin only) - must come before parameterized routes
 router
   .route("/getAll")
   .get(isAuthenticated, isAdmin, aiAnalysisController.getAllAnalysis);
+
+// Get mine analyses
+router.route("/getMine").get(isAuthenticated, aiAnalysisController.getMineAnalysis);
 // Like an AI analysis
 router
   .route("/:analysisId/like")
@@ -21,7 +25,5 @@ router
   .route("/:analysisId")
   .get(isAuthenticated, aiAnalysisController.getAnalysisDetails);
 
-
-router.route("/getMine").get(isAuthenticated, aiAnalysisController.getMineAnalysis);
 
 module.exports = router;
