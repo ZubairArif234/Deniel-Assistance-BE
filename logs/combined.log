@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {"date":"2025-09-01T13:28:25.467Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/auth/login"}
 {"date":"2025-09-01T13:28:25.867Z","level":"info","message":"Request received","method":"GET","service":"user-service","url":"/auth/me"}
 {"date":"2025-09-01T13:28:26.429Z","level":"info","message":"Request received","method":"GET","service":"user-service","url":"/user/admin-stats"}
@@ -300,3 +301,5 @@
 {"date":"2025-09-02T10:44:42.724Z","level":"info","message":"Request received","method":"GET","service":"user-service","url":"/case/getMine?page=1&limit=10"}
 {"date":"2025-09-02T10:44:48.988Z","level":"info","message":"Request received","method":"PUT","service":"user-service","url":"/auth/profile"}
 {"date":"2025-09-02T10:44:49.563Z","level":"info","message":"Request received","method":"GET","service":"user-service","url":"/case/getMine?page=1&limit=10"}
+=======
+>>>>>>> 030d612b62c8dede0a85126eaad530bdc77e612c

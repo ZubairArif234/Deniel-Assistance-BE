@@ -65,6 +65,11 @@ app.options("*", cors());
 
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 app.use(loggerMiddleware);
+app.post(
+  "/webhook",
+  express.raw({ type: "*/*" }),
+  handleStripeWebhook
+);
 
 
 app.use(express.urlencoded({ extended: true }));
@@ -73,11 +78,6 @@ app.use(express.json());
 
 // router index
 app.use("/", router);
-app.post(
-  "/webhook",
-  express.raw({ type: "application/json" }),
-  handleStripeWebhook
-);
 // api doc
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
@@ -122,97 +122,4 @@ app.use((req, res, next) => {
   next(new ApiError(404, "Not found"));
 });
 
-// cron jobs
-// const endLeagueJob = new CronJob(
-//   "0 0 0 * * *",
-
-//   async () => {
-//     try {
-//       const leagues = await League.find({
-//         status: "ongoing",
-//         endDate: { $lte: new Date() },
-//       });
-//       console.log("leagues.......", leagues);
-//       const admins = await user.find({ role: "admin" });
-//       Promise.all(
-//         leagues.map(async (league) => {
-//           if (league.endDate <= new Date()) {
-//             await League.findByIdAndUpdate(league._id, { status: "ended" });
-//             const teams = await Team.find({ league: league._id });
-//             Promise.all(
-//               admins.map(async (admin) => {
-//                 await adminNotification(
-//                   admin,
-//                   "League Ended",
-//                   `League ${league.name} has ended. Please check the results.`,
-//                   "league-ended",
-//                   { leagueId: league._id }
-//                 );
-//               })
-//             );
-//             Promise.all(
-//               teams.map(async (team) => {
-//                 const update = {
-//                   archivedPlayers: team.players.filter(
-//                     (player) =>
-//                       player.player.toString() !== team.captain.toString()
-//                   ),
-//                   players: team.players.filter(
-//                     (player) =>
-//                       player.player.toString() === team.captain.toString()
-//                   ),
-//                   isArchived: true,
-//                 };
-//                 await Team.findOneAndUpdate(
-//                   { _id: team._id },
-//                   { $set: update },
-//                   { new: true }
-//                 );
-
-//                 const captain = await user.findById(team.captain);
-
-//                 await sendNotification(
-//                   captain,
-//                   "League Ended",
-//                   `Your team ${team.name} has been archived as the league has ended. Please update your team for the next league.`,
-//                   "league-ended",
-//                   { teamId: team._id }
-//                 );
-//               })
-//             );
-//           }
-//         })
-//       );
-//     } catch (error) {
-//       console.log("error", error.message);
-//     }
-//   },
-//   null,
-//   true,
-//   "America/Los_Angeles"
-// );
-// const ongoingLeagueJob = new CronJob(
-//   "0 0 0 * * *",
-//   async () => {
-//     const leagues = await League.find({
-//       status: "upcoming",
-//       startDate: { $lte: new Date() },
-//     });
-//     const today = new Date();
-
-//     Promise.all(
-//       leagues.map(async (league) => {
-//         if (today >= league.startDate) {
-//           await League.findByIdAndUpdate(league._id, { status: "ongoing" });
-//         }
-//       })
-//     );
-//   },
-//   null,
-//   true,
-//   "America/Los_Angeles"
-// );
-
-// endLeagueJob.start();
-// ongoingLeagueJob.start();
 module.exports = app;

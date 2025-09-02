@@ -89,10 +89,14 @@ if (encounterScreenShots?.length > 0) {
     })
 
     // Decrement user's cases left (important!)
-    await User.findByIdAndUpdate(id, {
-      $inc: { noOfCasesLeft: -1 },
-      isFreeTrialUser: false // Mark trial as used after first case
-    });
+   const updatedUser = await User.findOneAndUpdate(
+  { _id: id, noOfCasesLeft: { $gt: 0 } }, // condition
+  {
+    $inc: { noOfCasesLeft: -1 },
+    $set: { isFreeTrialUser: false }
+  },
+  { new: true }
+);
 
     return SuccessHandler(
       {

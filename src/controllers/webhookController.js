@@ -2,6 +2,8 @@ const SuccessHandler = require("../utils/SuccessHandler");
 const ErrorHandler = require("../utils/ErrorHandler");
 const User = require("../models/User");
 const Transaction = require("../models/Transaction");
+const { mongo } = require("mongoose");
+const { default: mongoose } = require("mongoose");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const handleStripeWebhook = async (req, res) => {
@@ -51,7 +53,7 @@ const handleStripeWebhook = async (req, res) => {
 
 // Handle successful checkout session
 const handleCheckoutSessionCompleted = async (session) => {
-  console.log('💳 Processing completed checkout session:', session.id);
+  console.log('💳 Processing completed checkout session:', session);
   
   try {
     const userId = session.metadata?.userId;
@@ -64,21 +66,23 @@ const handleCheckoutSessionCompleted = async (session) => {
     const subscription = await stripe.subscriptions.retrieve(session.subscription);
     const product = await stripe.products.retrieve(subscription.items.data[0].price.product);
     
-    console.log('📦 Product:', product.name);
+    console.log('📦 Product:', product , subscription);
     console.log('👤 User ID:', userId);
 
     // Update user in database
     const updateData = {
       isFreeTrialUser: false,
       planType: product.name,
-      planId: subscription.id,
+      planId: product.id,
+      subscriptionId: subscription.id,
+      customerId: subscription.customer,
       noOfCasesLeft: product.metadata.tier === 'basic' ? 10 : 999, // Basic: 10, Pro/Enterprise: unlimited
     };
 
     const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true });
      
     await Transaction.create({
-        userId,
+        user: new mongoose.Types.ObjectId(userId),
         stripeSessionId: session.id,
         amountTotal: session.amount_total,
         currency: session.currency,

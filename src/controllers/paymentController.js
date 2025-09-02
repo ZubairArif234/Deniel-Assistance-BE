@@ -29,8 +29,8 @@ const createSubscriptionCheckout = async (req, res) => {
           quantity: 1,
         },
       ],
-      success_url: "http://localhost:3000/success?session_id={CHECKOUT_SESSION_ID}",
-      cancel_url: "http://localhost:3000/cancel",
+      success_url: "https://green-appeal-flow-omega.vercel.app/success?session_id={CHECKOUT_SESSION_ID}",
+      cancel_url: "https://green-appeal-flow-omega.vercel.app/cancel",
       metadata: {
     userId: req.user._id.toString(),
     customNote: "upgrade_to_pro",
