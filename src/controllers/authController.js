@@ -211,64 +211,37 @@ const updateProfile = async (req, res) => {
       return ErrorHandler("User does not exist", 400, req, res);
     }
 
-    let profileLink = user?.athleticDetails?.profileImage;
-    let fullLink = user?.athleticDetails?.fullImage;
 
-    if (req.files) {
-      if (req.files?.profileImage[0]) {
-        console.log("profileImage");
-
-        const img = req.files.profileImage[0];
-        const filePath = `${Date.now()}-${path.parse(img?.originalname)?.name}`;
-        const url = await cloud.uploadStreamImage(img.buffer, filePath);
-        if (profileLink) {
-          await cloud.deleteImage(profileLink);
-        }
-        profileLink = url.secure_url;
-
-        // const awsRes = await uploadFiles([req.files.profileImage]);
-        // if (awsRes.length > 0) {
-        //   await deleteFile(user.athleticDetails.profileImage);
-        // }
-        // profileLink = awsRes[0];
-      }
-      if (req.files?.fullImage[0]) {
-        console.log("fullImage");
-
-        const img = req.files.fullImage[0];
-        const filePath = `${Date.now()}-${path.parse(img?.originalname)?.name}`;
-        const url = await cloud.uploadStreamImage(img.buffer, filePath);
-        if (fullLink) {
-          await cloud.deleteImage(fullLink);
-        }
-
-        fullLink = url.secure_url;
-        // const awsRes = await uploadFiles([req.files.fullImage]);
-        // if (awsRes.length > 0) {
-        //   await deleteFile(user.athleticDetails.fullImage);
-        // }
-        // fullLink = awsRes[0];
-      }
-    }
-    if (data.email || data.password) {
+    if (data.password) {
       return ErrorHandler(
-        "Email and password cannot be updated here",
+        "Password cannot be updated here",
         400,
         req,
         res
       );
     }
 
+    // Check if email is being changed and validate
+    if (data.email && data.email !== user.email) {
+      const existingUser = await User.findOne({ email: data.email });
+      if (existingUser && existingUser._id.toString() !== user._id.toString()) {
+        return ErrorHandler(
+          "Email is already in use by another user",
+          400,
+          req,
+          res
+        );
+      }
+    }
+
+    // For simple profile updates (name, email), just update those fields
+    const updateData = {};
+    if (data.name) updateData.name = data.name;
+    if (data.email) updateData.email = data.email;
+
     const updated = await User.findByIdAndUpdate(
       req.user._id,
-      {
-        ...data,
-        athleticDetails: {
-          ...(req.body.athleticDetails || user.athleticDetails),
-          profileImage: profileLink,
-          fullImage: fullLink,
-        },
-      },
+      updateData,
       {
         new: true,
       }
