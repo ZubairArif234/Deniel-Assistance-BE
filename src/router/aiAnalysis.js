@@ -3,6 +3,9 @@ const router = express.Router();
 const aiAnalysisController = require("../controllers/aiAnalysisController");
 const { isAuthenticated, isAdmin } = require("../middleware/auth");
 
+router
+  .route("/getAll")
+  .get(isAuthenticated, isAdmin, aiAnalysisController.getAllAnalysis);
 // Like an AI analysis
 router
   .route("/:analysisId/like")
@@ -18,9 +21,6 @@ router
   .route("/:analysisId")
   .get(isAuthenticated, aiAnalysisController.getAnalysisDetails);
 
-router
-  .route("/getAll")
-  .get(isAuthenticated, isAdmin, aiAnalysisController.getAllAnalysis);
 
 router.route("/getMine").get(isAuthenticated, aiAnalysisController.getMineAnalysis);
 

@@ -20,9 +20,9 @@ const createPlan = async (req,res) => {
     });
 
     const price = await stripe.prices.create({
-      unit_amount: amount * 100 || 1000, // $10.00
+      unit_amount: amount * 100 , // $10.00
       currency: currency,
-      recurring: { interval: duration },
+      // recurring: { interval: duration },
       product: product.id, // Link to created product
     });
 
@@ -69,7 +69,7 @@ const updatePlan = async (req, res) => {
       newPrice = await stripe.prices.create({
         unit_amount: amount ? amount * 100 : existingPrices.data[0]?.unit_amount,
         currency: currency || existingPrices.data[0]?.currency || "usd",
-        recurring: { interval: duration || existingPrices.data[0]?.recurring?.interval || "month" },
+        // recurring: { interval: duration || existingPrices.data[0]?.recurring?.interval || "month" },
         product: id,
       });
     }

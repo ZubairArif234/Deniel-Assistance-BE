@@ -57,29 +57,50 @@ const handleCheckoutSessionCompleted = async (session) => {
   
   try {
     const userId = session.metadata?.userId;
+    const productId = session.metadata?.productId;
     if (!userId) {
       console.error('❌ No userId in session metadata');
       return;
     }
 
     // Get the subscription details
-    const subscription = await stripe.subscriptions.retrieve(session.subscription);
-    const product = await stripe.products.retrieve(subscription.items.data[0].price.product);
+    // const subscription = await stripe.subscriptions.retrieve(session.subscription);
+    const product = await stripe.products.retrieve(productId);
     
-    console.log('📦 Product:', product , subscription);
+    console.log('📦 Product:', product );
     console.log('👤 User ID:', userId);
 
     // Update user in database
-    const updateData = {
+    // const updateData = {
+    //   isFreeTrialUser: false,
+    //   planType: product.name,
+    //   planId: product.id,
+    //   subscriptionId: subscription.id,
+    //   customerId: subscription.customer,
+    //   noOfCasesLeft: product.metadata.tier === 'basic' ? 10 : product.metadata.tier === 'Pro'? 20 : 30, // Basic: 10, Pro/Enterprise: unlimited
+    // };
+
+    const updatedUser = await User.findByIdAndUpdate(
+  userId,
+  {
+    $set: {
       isFreeTrialUser: false,
       planType: product.name,
       planId: product.id,
-      subscriptionId: subscription.id,
-      customerId: subscription.customer,
-      noOfCasesLeft: product.metadata.tier === 'basic' ? 10 : 999, // Basic: 10, Pro/Enterprise: unlimited
-    };
+      // subscriptionId: subscription.id,
+      // customerId: subscription.customer,
+    },
+    $inc: {
+      noOfCasesLeft: product.metadata.tier === "basic"
+        ? 10
+        : product.metadata.tier === "Pro"
+        ? 20
+        : 30,
+    }
+  },
+  { new: true }
+);
 
-    const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true });
      
     await Transaction.create({
         user: new mongoose.Types.ObjectId(userId),
@@ -87,7 +108,7 @@ const handleCheckoutSessionCompleted = async (session) => {
         amountTotal: session.amount_total,
         currency: session.currency,
         paymentStatus: session.payment_status,
-        subscriptionId: session.subscription,
+        // subscriptionId: session.subscription,
         type: "subscription",
       });
 

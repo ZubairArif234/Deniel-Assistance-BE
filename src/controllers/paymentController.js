@@ -16,15 +16,16 @@ const createSubscriptionCheckout = async (req, res) => {
     if (!prices.data.length) {
       return res.status(404).json({ error: "No active price found for this product" });
     }
-
+console.log( "obj",prices)
     const priceId = prices.data[0].id;
 
     // 2. Create checkout session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
-      mode: "subscription",
+      mode: "payment", // payment (one time payment) , subscription (recursive)
       line_items: [
         {
+          // price: prices.data[0]?.unit_amount_decimal,
           price: priceId,
           quantity: 1,
         },
@@ -34,6 +35,7 @@ const createSubscriptionCheckout = async (req, res) => {
       metadata: {
     userId: req.user._id.toString(),
     customNote: "upgrade_to_pro",
+    productId
   },
     });
 
