@@ -60,7 +60,7 @@ async function sendPromptWithImagesGemini(promptText, base64Images = []) {
     console.log('Prompt text length:', promptText.length);
     console.log('Number of base64 images:', base64Images.length);
     
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
     
     // Prepare content array starting with text
     const content = [promptText];
