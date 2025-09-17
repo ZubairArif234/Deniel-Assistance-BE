@@ -14,18 +14,23 @@ const caseSchema = new Schema(
       type: String,
      required:true
     },
-    prevClaimDOS: {
+    previousClaimDOS: {
       type: String,
-     required:true
     },
-    prevClaimCPT: {
+    previousClaimCPT: {
       type: String,
-     required:true
+    },
+    primaryPayer: {
+      type: String,
+      required: true
     },
     denialScreenShots: {
       type: [],
     },
     encounterScreenShots: {
+      type: [],
+    },
+    diagnosisScreenShots: {
       type: [],
     },
     denialText: {
@@ -34,7 +39,7 @@ const caseSchema = new Schema(
     encounterText: {
       type: String
     },
-    primaryPayer: {
+    diagnosisText: {
       type: String
     },
    

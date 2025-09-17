@@ -1,0 +1,2 @@
+{"date":"2025-09-17T14:58:06.995Z","level":"error","message":"Invalid credentials","method":"POST","service":"user-service","url":"/login"}
+{"date":"2025-09-17T14:58:11.908Z","level":"error","message":"Invalid credentials","method":"POST","service":"user-service","url":"/login"}

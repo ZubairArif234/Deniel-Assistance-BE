@@ -2,93 +2,151 @@ const Case = require("../models/Case");
 const User = require("../models/User");
 const SuccessHandler = require("../utils/SuccessHandler");
 const ErrorHandler = require("../utils/ErrorHandler");
-const cloud = require("../functions/cloudinary");
 const path = require("path");
-const OpenAI  = require("openai");
 const { default: mongoose } = require("mongoose");
 const dotenv = require("dotenv");
 const AiAnalysis = require("../models/AiAnalysisi");
+const geminiService = require("../functions/geminiService");
 dotenv.config({ path: "./src/config/config.env" });
-
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY, 
-});
 
 //create case
 const createCase = async (req, res) => {
   // #swagger.tags = ['case']
   try {
     const {id} = req.user
-    const {denialScreenShots,encounterScreenShots} =  req.files
     const {
       currentClaim,
-      prevClaimDOS,
-      prevClaimCPT,
+      previousClaimDOS,
+      previousClaimCPT,
+      primaryPayer,
       denialText,
       encounterText,
-      primaryPayer,
+      diagnosisText,
+      denialImages = [],
+      encounterImages = [],
+      diagnosisImages = []
     } = req.body;
 
-let denialScreenShotsUrl = [];
-let encounterScreenShotsUrl = [];
+    console.log('=== CASE CONTROLLER: PROCESSING BASE64 IMAGES ===');
+    console.log('Denial images count:', denialImages.length);
+    console.log('Encounter images count:', encounterImages.length);
+    console.log('Diagnosis images count:', diagnosisImages.length);
 
-if (denialScreenShots?.length > 0) {
-  denialScreenShotsUrl = await Promise.all(
-    denialScreenShots.map(async (img) => {
-      const filePath = `${Date.now()}-${path.parse(img.originalname).name}`;
-    const res = await cloud.uploadStreamImage(img.buffer, filePath);
-      return res?.secure_url
-    })
-  );
-}
+    // Process base64 images for Gemini
+    let processedImages = [];
+    
+    // Process denial images
+    denialImages.forEach(img => {
+      processedImages.push({
+        base64: img.base64,
+        mimeType: img.type,
+        originalname: img.name,
+        type: 'denial'
+      });
+    });
 
-if (encounterScreenShots?.length > 0) {
-  encounterScreenShotsUrl = await Promise.all(
-    encounterScreenShots.map(async (img) => {
-      const filePath = `${Date.now()}-${path.parse(img.originalname).name}`;
-       const res = await cloud.uploadStreamImage(img.buffer, filePath);
-      return res?.secure_url
-    })
-  );
-}
+    // Process encounter images
+    encounterImages.forEach(img => {
+      processedImages.push({
+        base64: img.base64,
+        mimeType: img.type,
+        originalname: img.name,
+        type: 'encounter'
+      });
+    });
+
+    // Process diagnosis images
+    diagnosisImages.forEach(img => {
+      processedImages.push({
+        base64: img.base64,
+        mimeType: img.type,
+        originalname: img.name,
+        type: 'diagnosis'
+      });
+    });
+
+    console.log('Total processed images:', processedImages.length);
+    console.log('Image details:', processedImages.map(img => `${img.originalname} (${img.type})`));
 
     const newCase = await Case.create({
       user:id,
       currentClaim,
-      prevClaimDOS,
-      prevClaimCPT,
-      denialScreenShots : denialScreenShotsUrl,
-      encounterScreenShots : encounterScreenShotsUrl,
-      denialText,
-      encounterText,
+      previousClaimDOS: previousClaimDOS || null,
+      previousClaimCPT: previousClaimCPT || null,
       primaryPayer,
+      denialScreenShots: [], // No longer storing URLs, processing directly
+      encounterScreenShots: [], // No longer storing URLs, processing directly
+      diagnosisScreenShots: [], // No longer storing URLs, processing directly
+      denialText: denialText || null,
+      encounterText: encounterText || null,
+      diagnosisText: diagnosisText || null,
     });
 
-    const response = await client.chat.completions.create({
-      model: "gpt-4o-mini", 
-      response_format: { type: "json_object" }, 
-      messages: [
-        {
-          role: "system",
-          content:
-            "You are an assistant that analyzes case entries. Always respond in JSON with 'flows' and 'improvements'.",
-        },
-        {
-          role: "user",
-          content: `Here is a case entry: ${JSON.stringify(newCase)}`,
-        },
-      ],
-    });
+    // Use Gemini for analysis
+    console.log('=== CASE CONTROLLER: STARTING GEMINI ANALYSIS ===');
+    console.log('Case ID:', newCase._id);
+    console.log('User ID:', id);
     
-    const analysis = JSON.parse(response.choices[0].message.content);
+    // Pass the processed images directly to Gemini
+    const geminiResponse = await geminiService.analyzeCaseWithGemini(newCase, processedImages);
+    
+    console.log('=== CASE CONTROLLER: GEMINI RESPONSE RECEIVED ===');
+    console.log('Raw Gemini response length:', geminiResponse.length);
+    
+    // Try to parse as JSON, fallback to text if not valid JSON
+    let analysis;
+    try {
+      let jsonString = geminiResponse;
+      
+      // Check if response is wrapped in markdown code blocks
+      const jsonMatch = geminiResponse.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/);
+      if (jsonMatch) {
+        jsonString = jsonMatch[1];
+        console.log('Extracted JSON from markdown code block in controller');
+        console.log('Extracted JSON string:', jsonString);
+      }
+      
+      analysis = JSON.parse(jsonString);
+      console.log('Successfully parsed Gemini response as JSON');
+      console.log('Parsed analysis structure:', Object.keys(analysis));
+    } catch (error) {
+      console.log('Gemini response is not valid JSON, using fallback format');
+      console.log('Parse error:', error.message);
+      
+      // Try alternative JSON extraction
+      try {
+        const jsonMatch2 = geminiResponse.match(/\{[\s\S]*\}/);
+        if (jsonMatch2) {
+          const jsonString2 = jsonMatch2[0];
+          console.log('Trying alternative JSON extraction in controller:', jsonString2);
+          analysis = JSON.parse(jsonString2);
+          console.log('Successfully parsed with alternative method in controller');
+        } else {
+          throw new Error('No JSON found in response');
+        }
+      } catch (altError) {
+        console.log('Alternative JSON extraction also failed in controller:', altError.message);
+        // If not valid JSON, wrap in the expected format
+        analysis = {
+          flows: [geminiResponse],
+          improvements: ["Analysis completed using Gemini AI"]
+        };
+      }
+    }
+    
+    console.log('Final analysis object:', JSON.stringify(analysis, null, 2));
+    console.log('=== CASE CONTROLLER: ANALYSIS COMPLETE ===');
 
+    console.log('=== CASE CONTROLLER: CREATING AI ANALYSIS RECORD ===');
     const newAiAnalysis = await AiAnalysis.create({
       case:newCase?._id,
       user:id,
       analysis
-    })
+    });
+    console.log('AI Analysis record created with ID:', newAiAnalysis._id);
 
     // Decrement user's cases left (important!)
+    console.log('=== CASE CONTROLLER: UPDATING USER CASE COUNT ===');
    const updatedUser = await User.findOneAndUpdate(
   { _id: id, noOfCasesLeft: { $gt: 0 } }, // condition
   {
@@ -97,6 +155,14 @@ if (encounterScreenShots?.length > 0) {
   },
   { new: true }
 );
+
+    console.log('User case count updated. Cases left:', updatedUser?.noOfCasesLeft);
+
+    console.log('=== CASE CONTROLLER: SENDING SUCCESS RESPONSE ===');
+    console.log('Response data structure:');
+    console.log('- Case ID:', newCase._id);
+    console.log('- AI Analysis ID:', newAiAnalysis._id);
+    console.log('- Analysis keys:', Object.keys(analysis));
 
     return SuccessHandler(
       {
@@ -107,6 +173,12 @@ if (encounterScreenShots?.length > 0) {
       res
     );
   } catch (error) {
+    console.error('=== CASE CONTROLLER: ERROR ===');
+    console.error('Error in createCase:', error.message);
+    console.error('Error stack:', error.stack);
+    console.error('Request body keys:', Object.keys(req.body));
+    console.error('Request files keys:', Object.keys(req.files || {}));
+    console.error('=== END CASE CONTROLLER ERROR ===');
     return ErrorHandler(error.message, 500, req, res);
   }
 };
