@@ -59,3 +59,9 @@
 {"date":"2025-09-17T15:28:06.454Z","level":"info","message":"Request received","method":"GET","service":"user-service","url":"/auth/me"}
 {"date":"2025-09-17T15:36:19.908Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/auth/login"}
 {"date":"2025-09-17T15:36:20.230Z","level":"info","message":"Request received","method":"GET","service":"user-service","url":"/auth/me"}
+{"date":"2025-09-17T16:14:22.802Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/case"}
+{"date":"2025-09-17T16:14:30.374Z","level":"info","message":"Request received","method":"GET","service":"user-service","url":"/auth/me"}
+{"date":"2025-09-17T16:18:50.429Z","level":"info","message":"Request received","method":"GET","service":"user-service","url":"/auth/me"}
+{"date":"2025-09-17T16:19:17.471Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/case"}
+{"date":"2025-09-17T16:19:22.680Z","level":"info","message":"Request received","method":"GET","service":"user-service","url":"/auth/me"}
+{"date":"2025-09-17T16:23:13.031Z","level":"info","message":"Request received","method":"POST","service":"user-service","url":"/case"}
