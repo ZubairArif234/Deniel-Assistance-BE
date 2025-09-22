@@ -192,10 +192,20 @@ const getMineCases = async (req, res) => {
     const { page = 1, limit = 10 } = req.query;
 console.log(id);
 
-    const cases = await Case.aggregate([
+    const cases = await AiAnalysis.aggregate([
       {
         $match: { user: new mongoose.Types.ObjectId(id) }
+
       },
+      {
+        $lookup: {
+          from: "cases",
+          localField: "case",
+          foreignField: "_id",
+          as: "case"
+        }
+      },
+      { $unwind: "$case" },
       {
         $lookup: {
           from: "users",
@@ -242,8 +252,17 @@ const getAllCases = async (req, res) => {
   try {
     const { page = 1, limit = 10 } = req.query;
 
-    const cases = await Case.aggregate([
+    const cases = await AiAnalysis.aggregate([
       // First, lookup user information
+        {
+        $lookup: {
+          from: "cases",
+          localField: "case",
+          foreignField: "_id",
+          as: "case"
+        }
+      },
+      { $unwind: "$case" },
       {
         $lookup: {
           from: "users",
