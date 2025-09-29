@@ -6,6 +6,9 @@ const { isAuthenticated, isAdmin } = require("../middleware/auth");
 router
   .route("/")
   .post(isAuthenticated, payment.createSubscriptionCheckout);
+router
+  .route("/manage-subscription")
+  .get(isAuthenticated, payment.createBillingPortal);
 
 
 

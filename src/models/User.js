@@ -46,7 +46,17 @@ const userSchema = new Schema(
     },
     noOfCasesLeft: {
       type: Number,
-     default:1
+     default:3
+    },
+    rolloverCasesLeft: {
+      type: Number,
+    },
+    baseMonthlyCredits: {
+      type: Number,
+    },
+    lastRolloverAt: {
+      type: Date,
+     
     },
     planType: {
       type: String,
@@ -59,6 +69,9 @@ const userSchema = new Schema(
       type:String
     },
     customerId: {
+      type:String
+    },
+    subscriptionStatus: {
       type:String
     },
     role: {
