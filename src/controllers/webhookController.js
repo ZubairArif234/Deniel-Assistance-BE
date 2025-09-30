@@ -75,7 +75,7 @@ const handleCheckoutSessionCompleted = async (session) => {
       currency: session.currency,
       paymentStatus: session.payment_status,
       subscriptionId: subscriptionId,
-      type: "subscription_initial",
+      type: "subscribed",
     });
 
     if (updatedUser) {
