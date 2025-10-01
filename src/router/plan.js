@@ -5,7 +5,7 @@ const { isAuthenticated, isAdmin } = require("../middleware/auth");
 
 router
   .route("/")
-  .get(isAuthenticated, plan.getAllPlans);
+  .get( plan.getAllPlans);
 router
   .route("/:id")
   .get(isAuthenticated, plan.getSinglePlan);
