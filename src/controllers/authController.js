@@ -35,9 +35,9 @@ const register = async (req, res) => {
       { emailVerificationToken }
     );
     
-    await sendMail(email, "Your HealthCare Login Code", emailTemplate);
+    // await sendMail(email, "Your HealthCare Login Code", emailTemplate);
     newUser.save();
-     sendGoogleOtpMail(email, emailVerificationToken, "login");
+     sendGoogleOtpMail(email, emailVerificationToken, "register");
     // const jwtToken = newUser.getJWTToken();
     return SuccessHandler(
       {
@@ -49,6 +49,48 @@ const register = async (req, res) => {
     return ErrorHandler(error.message, 500, req, res);
   }
 };
+
+// resendVerificationToken.js
+const resendVerificationToken = async (req, res) => {
+  // #swagger.tags = ['auth']
+  try {
+    const { email } = req.body;
+
+    // check if user exists
+    const user = await User.findOne({ email });
+    if (!user) {
+      return ErrorHandler("User not found", 404, req, res);
+    }
+
+    // create new token
+    const emailVerificationToken = Math.floor(100000 + Math.random() * 900000);
+    const emailVerificationTokenExpires = new Date(Date.now() + 5 * 60 * 1000);
+
+    user.emailVerificationToken = emailVerificationToken;
+    user.emailVerificationTokenExpires = emailVerificationTokenExpires;
+
+    await user.save();
+
+    // render email template if you use ejs
+    const emailTemplate = await ejs.renderFile(
+      path.join(__dirname, "../ejs/loginCode.ejs"),
+      { emailVerificationToken }
+    );
+
+    // send mail
+    // await sendMail(email, "Your HealthCare Login Code", emailTemplate);
+    sendGoogleOtpMail(email, emailVerificationToken, "resend");
+
+    return SuccessHandler(
+      { message: "Verification code resent successfully" },
+      200,
+      res
+    );
+  } catch (error) {
+    return ErrorHandler(error.message, 500, req, res);
+  }
+};
+
 
 //login
 const login = async (req, res) => {
@@ -350,6 +392,7 @@ const socialAuth = async (req, res) => {
 module.exports = {
   register,
   login,
+  resendVerificationToken,
   forgotPassword,
   resetPassword,
   updatePassword,

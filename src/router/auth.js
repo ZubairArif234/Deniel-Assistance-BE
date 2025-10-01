@@ -6,6 +6,7 @@ const uploader = require("../utils/uploader");
 
 router.route("/register").post(auth.register);
 router.route("/login").post(auth.login);
+router.route("/resendToken").post(auth.resendVerificationToken);
 router.route("/verifyEmail").post(auth.verifyEmail);
 router.route("/forgotPassword").post(auth.forgotPassword);
 router.route("/resetPassword").put(auth.resetPassword);
