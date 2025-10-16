@@ -4,7 +4,7 @@
 const nodemailer = require("nodemailer")
 const dotenv = require("dotenv");
 dotenv.config({ path: "./src/config/config.env" });
-
+ 
 
 
 const transporter = nodemailer.createTransport({
