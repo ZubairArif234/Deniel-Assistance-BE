@@ -4,9 +4,9 @@ const ErrorHandler = require("../utils/ErrorHandler");
 const sendMail = require("../utils/sendMail");
 const ejs = require("ejs");
 const path = require("path");
-
+// const sendGoogleOtpMail = require("../utils/SendGoogleMail")
 const cloud = require("../functions/cloudinary");
-const sendGoogleOtpMail = require("../utils/SendGoogleMail");
+const {sendGoogleOtpMail} = require("../utils/SendGoogleMail");
 //register
 const register = async (req, res) => {
   // #swagger.tags = ['auth']

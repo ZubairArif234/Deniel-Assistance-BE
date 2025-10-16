@@ -7,6 +7,7 @@ const { default: mongoose } = require("mongoose");
 const dotenv = require("dotenv");
 const AiAnalysis = require("../models/AiAnalysisi");
 const geminiService = require("../functions/geminiService");
+const { analyzeCaseWithOpenAI } = require("../functions/openaiService");
 dotenv.config({ path: "./src/config/config.env" });
 
 //create case
@@ -88,7 +89,24 @@ const createCase = async (req, res) => {
     console.log('User ID:', id);
     
     // Pass the processed images directly to Gemini
-    const geminiResponse = await geminiService.analyzeCaseWithGemini(newCase, processedImages);
+    // const geminiResponse = await geminiService.analyzeCaseWithGemini(newCase, processedImages);
+
+    let geminiResponse;
+try {
+  //  throw new Error("Simulated Gemini failure for testing fallback");
+  console.log('=== CASE CONTROLLER: STARTING GEMINI ANALYSIS ===');
+  geminiResponse = await geminiService.analyzeCaseWithGemini(newCase, processedImages);
+} catch (geminiError) {
+  console.error('Gemini failed, falling back to OpenAI...');
+  console.error(geminiError.message);
+
+  try {
+    geminiResponse = await analyzeCaseWithOpenAI(newCase, processedImages);
+  } catch (openAiError) {
+    console.error('OpenAI also failed:', openAiError.message);
+    throw new Error('Both Gemini and OpenAI failed to process the case');
+  }
+}
     
     console.log('=== CASE CONTROLLER: GEMINI RESPONSE RECEIVED ===');
     console.log('Raw Gemini response length:', geminiResponse.length);

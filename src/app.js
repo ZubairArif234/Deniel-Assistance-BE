@@ -77,7 +77,7 @@ app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' }));
 app.use(express.json({ limit: '50mb' }));
 
 // router index
-app.use("/", router);
+app.use("/api", router);
 // api doc
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
