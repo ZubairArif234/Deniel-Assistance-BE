@@ -82,7 +82,7 @@ app.use("/api", router);
 // api doc
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
-app.get("/", async (req, res) => {
+app.get("/api", async (req, res) => {
   // await Match.updateMany({}, { $set: { status: "pending" } });
   // await Season.insertMany([
   //   { name: "Summer'24" },
