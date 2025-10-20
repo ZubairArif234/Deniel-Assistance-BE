@@ -203,7 +203,8 @@ const sendGoogleScheduleMail = async ( fullName,email,company,employees,role ) =
 <body>
     <div class="container">
         <div class="header">
-            <div class="logo">🏥 Denial Assistance</div>
+           <img style="height:'150px'" src="https://res.cloudinary.com/drqtz5s5m/image/upload/v1760532070/logo_knw7jo.png"/>
+           
             <h2 class="title">New Submission!</h2>
         </div>
         

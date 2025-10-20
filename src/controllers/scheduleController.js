@@ -2,7 +2,7 @@
 const Schedule = require("../models/Schedule");
 const SuccessHandler = require("../utils/SuccessHandler");
 const ErrorHandler = require("../utils/ErrorHandler");
-const sendGoogleOtpMail = require("../utils/SendGoogleMail");
+const {sendGoogleScheduleMail} = require("../utils/SendGoogleMail");
 
 
 const manageSchedule = async (req, res) => {
@@ -14,7 +14,7 @@ const manageSchedule = async (req, res) => {
      fullName, email, company,employees,role
     });
 
-     sendGoogleOtpMail.sendGoogleScheduleMail(fullName, email, company,employees,role);
+     sendGoogleScheduleMail(fullName, email, company,employees,role);
     // const jwtToken = newUser.getJWTToken();
     return SuccessHandler(
       {

@@ -3,7 +3,7 @@ const router = express.Router();
 const scheduleController = require("../controllers/scheduleController");
 const { isAuthenticated } = require("../middleware/auth");
 
-router.route("/").post( isAuthenticated,
+router.route("/").post(
   scheduleController.manageSchedule);
   
 module.exports = router;
