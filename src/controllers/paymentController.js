@@ -1,6 +1,9 @@
 const SuccessHandler = require("../utils/SuccessHandler");
 const ErrorHandler = require("../utils/ErrorHandler");
 const User = require("../models/User");
+const dotenv = require("dotenv");
+dotenv.config({ path: "./src/config/config.env" });
+
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const createSubscriptionCheckout = async (req, res) => {
@@ -55,8 +58,8 @@ const createSubscriptionCheckout = async (req, res) => {
         },
       ],
       customer_email: req.user.email,
-      success_url: "https://green-appeal-flow-omega.vercel.app/success?session_id={CHECKOUT_SESSION_ID}",
-      cancel_url: "https://green-appeal-flow-omega.vercel.app/cancel",
+      success_url: `${process.env.FRONTEND_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.FRONTEND_URL}/cancel`,
       metadata: {
         userId: req.user._id.toString(),
         priceId: productId,
@@ -86,7 +89,7 @@ const createBillingPortal = async (req, res) => {
 
     const portalSession = await stripe.billingPortal.sessions.create({
       customer: user.customerId,
-      return_url: "https://green-appeal-flow-omega.vercel.app/dashboard", // where user goes back after portal
+      return_url: `${process.env.FRONTEND_URL}/dashboard`, // where user goes back after portal
     });
 
     return SuccessHandler({ url: portalSession.url }, 200, res);
