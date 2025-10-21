@@ -22,59 +22,63 @@ const handleCheckoutSessionCompleted = async (session) => {
       return;
     }
 
-    // Ensure session was paid successfully
     if (session.payment_status !== 'paid') {
       console.warn(`⚠️ Session not paid for user ${userId}. Status: ${session.payment_status}. Skipping DB update.`);
       return;
     }
 
-    // Retrieve product to determine credit amounts
     const product = await stripe.products.retrieve(productId);
-    console.log(product , "product hai ye");
-    
-    
-    const initialBaseCredits = product.name === "Starter"
-      ? 30
-      : product.name === "Pro"
-        ? 80
-        : 100
+    console.log(product, "product hai ye");
+
+    const initialBaseCredits =
+      product.name === "Starter" ? 30 :
+      product.name === "Pro" ? 80 :
+      100;
 
     const subscriptionId = session.subscription;
-    const customerId = session.customer; // Use session.customer for Customer ID
+    const customerId = session.customer;
 
     console.log('📦 Product:', product.name);
     console.log('👤 User ID:', userId);
     console.log('⭐ Subscription ID:', subscriptionId);
-    
-    // Update user in database with initial plan, credits, and Stripe IDs
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      {
-        $set: {
-          isFreeTrialUser: false,
-          planType: product.name,
-          planId: product.id,
-          subscriptionId: subscriptionId, 
-          customerId: customerId,
-          baseMonthlyCredits: initialBaseCredits, // Save fixed base amount
-          rolloverCasesLeft: 0,                   // Initialize rollover to zero
-          subscriptionStatus: 'active',
-        },
-        $inc: {
-          noOfCasesLeft: initialBaseCredits, // Grant initial base credits
-        }
-      },
-      { new: true }
-    );
 
-    // Create a transaction record
+    // Fetch user first
+    const user = await User.findById(userId);
+    if (!user) throw new Error("User not found");
+
+    // Base update data
+    const updateData = {
+      $set: {
+        isFreeTrialUser: false,
+        planType: product.name,
+        planId: product.id,
+        subscriptionId,
+        customerId,
+        baseMonthlyCredits: initialBaseCredits,
+        rolloverCasesLeft: 0,
+        subscriptionStatus: "active",
+      },
+    };
+
+    // Conditional logic for credits
+    if (!user.isFreeTrialUser) {
+      // Paid user → add credits on top of existing
+      updateData.$inc = { noOfCasesLeft: initialBaseCredits };
+    } else {
+      // Free trial → reset to base credits only (do NOT add)
+      updateData.$set.noOfCasesLeft = initialBaseCredits;
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true });
+
+    // Create transaction record
     await Transaction.create({
       user: new mongoose.Types.ObjectId(userId),
       stripeSessionId: session.id,
       amountTotal: session.amount_total,
       currency: session.currency,
       paymentStatus: session.payment_status,
-      subscriptionId: subscriptionId,
+      subscriptionId,
       type: "subscribed",
     });
 
@@ -87,6 +91,7 @@ const handleCheckoutSessionCompleted = async (session) => {
     console.error('❌ Error handling checkout session:', error);
   }
 };
+
 
 /**
  * Handle successful payment for a subscription renewal (the rollover trigger).
@@ -105,30 +110,31 @@ const handleInvoicePaymentSucceeded = async (invoice) => {
     const subscriptionId = invoice.subscription;
     
     // 1. Find the user based on the subscription ID
-    const user = await User.findOne({ subscriptionId: subscriptionId });
+    const user = await User.findOne({ subscriptionId });
     if (!user) {
       console.error("❌ User not found for subscription ID:", subscriptionId);
       return;
     }
-    
+
+    // 🚫 Skip updating credits for free trial users
+    if (user.isFreeTrialUser) {
+      console.log(`🟡 Skipping credit update for free trial user: ${user.email}`);
+      return;
+    }
+
     // Ensure baseMonthlyCredits is defined (set during checkout.session.completed)
     const currentBaseCredits = user.baseMonthlyCredits || 0;
-    
+
     // The previous rollover amount (which is about to expire)
     const previousRollover = user.rolloverCasesLeft || 0;
-    
+
     // Current total cases left
     const currentTotalCases = user.noOfCasesLeft || 0;
 
     // --- 2. Calculate Unused Base Credits (The part that rolls over) ---
-    
-    // Total credits available in the previous cycle: Base + Rollover
     const totalPreviousAllowance = currentBaseCredits + previousRollover;
-    
-    // Credits used: Total Allowance - Current Remaining
-    const totalCreditsUsed = totalPreviousAllowance - currentTotalCases; 
+    const totalCreditsUsed = totalPreviousAllowance - currentTotalCases;
 
-    // We assume rollover is consumed first. So, if usage exceeds rollover, it hits the base.
     const usedFromBase = Math.max(0, totalCreditsUsed - previousRollover);
     const unusedBaseCredits = Math.max(0, currentBaseCredits - usedFromBase);
 
@@ -136,19 +142,16 @@ const handleInvoicePaymentSucceeded = async (invoice) => {
     const newRolloverAmount = Math.floor(unusedBaseCredits * 0.5);
 
     // --- 4. Calculate New Total Cases (New Base + New Rollover) ---
-    // This logic ensures all previous unused credits (base and old rollover) are expired,
-    // leaving only the new base and the calculated 50% rollover.
     const newTotalCases = currentBaseCredits + newRolloverAmount;
-
 
     // 5. Update user with new balances
     const updatedUser = await User.findByIdAndUpdate(
       user._id,
       {
         $set: {
-          noOfCasesLeft: newTotalCases,       // <-- USE $SET to implement full balance reset/expiration
-          rolloverCasesLeft: newRolloverAmount, // Save the new rollover value for the *next* cycle's calculation
-          subscriptionStatus: 'active', 
+          noOfCasesLeft: newTotalCases,
+          rolloverCasesLeft: newRolloverAmount,
+          subscriptionStatus: "active",
         },
       },
       { new: true }
@@ -157,20 +160,23 @@ const handleInvoicePaymentSucceeded = async (invoice) => {
     // 6. Create a transaction record for the renewal
     await Transaction.create({
       user: user._id,
-      stripeSessionId: invoice.id, 
+      stripeSessionId: invoice.id,
       amountTotal: invoice.amount_due,
       currency: invoice.currency,
       paymentStatus: invoice.paid ? "paid" : "unpaid",
-      subscriptionId: subscriptionId,
+      subscriptionId,
       type: "subscription_renewal",
     });
 
-    console.log(`✅ Renewal for ${updatedUser.email}. Unused Base: ${unusedBaseCredits}, New Rollover: ${newRolloverAmount}. New Total: ${newTotalCases}`);
+    console.log(
+      `✅ Renewal for ${updatedUser.email}. Unused Base: ${unusedBaseCredits}, New Rollover: ${newRolloverAmount}. New Total: ${newTotalCases}`
+    );
 
   } catch (error) {
     console.error("❌ Error handling invoice payment succeeded:", error);
   }
 };
+
 
 // Handle subscription created
 const handleSubscriptionCreated = async (subscription) => {
