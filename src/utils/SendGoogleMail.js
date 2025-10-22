@@ -7,7 +7,7 @@ dotenv.config({ path: "./src/config/config.env" });
 const sendGoogleOtpMail = async (recipientEmail, otp , type="register") => {
   try {
     const mailOptions = {
-      from: `"Denial Analysis" <${process.env.EMAIL}>`,
+      from: `"Denial Analyzer" <${process.env.EMAIL}>`,
       to: recipientEmail,
       subject: "Your OTP Code",
       text: `Your OTP code is: ${otp}`,
@@ -97,8 +97,8 @@ const sendGoogleOtpMail = async (recipientEmail, otp , type="register") => {
         <p>If you're having trouble in verify your email, please contact our support team <a href="mailto:'support@covehealthsolutions.com'">support@covehealthsolutions.com</a>.</p>
         
         <div class="footer">
-            <p>This is an automated message from Denial Analysis.</p>
-            <p>&copy; 2025 Denial Analysis. All rights reserved.</p>
+            <p>This is an automated message from Denial Analyzer.</p>
+            <p>&copy; 2025 Cove Health. All rights reserved.</p>
         </div>
     </div>
 </body>
@@ -116,7 +116,7 @@ const sendGoogleOtpMail = async (recipientEmail, otp , type="register") => {
 const sendGoogleScheduleMail = async ( fullName,email,company,employees,role ) => {
   try {
     const mailOptions = {
-      from: `"Denial Analysis" <${process.env.EMAIL}>`,
+      from: `"Denial Analyzer" <${process.env.EMAIL}>`,
       to: `${email}`,
       subject: "Schedule Demo",
       text: `New schedule demo request`,
@@ -238,7 +238,7 @@ const sendGoogleScheduleMail = async ( fullName,email,company,employees,role ) =
         <p style="margin-top: 30px;">Please take the necessary action to follow up on this submission.</p>
         
         <div class="footer">
-            <p>This is an automated notification from Denial Analysis system.</p>
+            <p>This is an automated notification from Denial Analyzer system.</p>
            
         </div>
     </div>
